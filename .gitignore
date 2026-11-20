@@ -1,0 +1,65 @@
+# ============================================================
+# Proofit .gitignore
+# 개인정보(이력·증거·지원 기록)와 수집 데이터는 절대 커밋하지 않는다.
+# ============================================================
+
+# --- Secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+credentials*.json
+token*.json
+
+# --- Local data (personal data & collected job postings) ---
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+backups/
+exports/
+uploads/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# --- Node / Frontend ---
+node_modules/
+.vite/
+frontend/dist/
+*.local
+
+# --- Playwright ---
+test-results/
+playwright-report/
+
+# --- Logs ---
+logs/
+*.log
+
+# --- OS / Editor ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# --- Claude Code (personal settings only; shared settings are committed) ---
+.claude/settings.local.json
