@@ -15,6 +15,10 @@ Details: `docs/proposal.md` (spec) and `docs/decisions.md` (decision log + sourc
 - Project hooks (`.claude/hooks/`): `guard_secrets.py` blocks committing `.env`, DB files, `data/`, keys; `ruff_on_edit.py` runs ruff fix + format on edited `.py` files.
 - Commands (test, lint, run): add here as they are created.
 
+## Git
+- **Do not add `Co-Authored-By: Claude` (or any Claude attribution) trailers to commit messages or PR descriptions.**
+- Write commit messages in English: a short imperative subject line, then a bullet summary of what changed and why.
+
 ## Automated job discovery (P0)
 - Prefer authorized APIs, public company ATS job-board APIs, opt-in 채용 알림 이메일 (read-only mailbox access), and official RSS feeds. Manual URL/paste import is a **fallback, not the main workflow**. Google Alerts is **not used**.
 - Do not crawl job platforms (잡코리아, 캐치, 인크루트 등) whose terms or robots.txt disallow automated collection.
