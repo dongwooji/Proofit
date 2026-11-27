@@ -117,7 +117,19 @@ AI Agent가 공고의 요구사항을 추출하고 지원자의 이력, 연구, 
 - 직무별 강조할 경험 설정
 - **증거 버전 관리**: 수정할 때마다 새 버전을 만들고, 평가는 특정 버전을 참조
 
-**설계 원칙**: 하나의 프로젝트에 여러 증거를 연결한다. 예를 들어 Agentic RAG 프로젝트의 'Hybrid Recall@10 개선'은 프로젝트와 별개의 구체적인 증거로 관리한다.
+- **진로 선호(career preferences)** 관리: 목표 직무(우선순위), 관심 산업, 희망 연봉 하한, 희망 지역·출퇴근 한계, 원격 선호, 허용 고용형태, 회사 규모 선호, 성장에서 중요하게 보는 것, 절대 안 되는 조건(deal-breaker), 장기 목표, Global 항목 가중치. 증거처럼 버전을 관리한다.
+
+**설계 원칙**: 하나의 프로젝트에 여러 증거를 연결한다. 예를 들어 Agentic RAG 프로젝트의 'Hybrid Recall@10 개선'은 프로젝트와 별개의 구체적인 증거로 관리한다. 성과 수치는 확인 가능한 것만 등록한다.
+
+**입력 경로** (원본은 항상 DB)
+
+| 시기 | 방법 |
+|---|---|
+| 초기 (화면 이전) | 구조화된 프로필 파일 `data/profile/profile.yaml`을 작성하고 가져오기 스크립트로 DB에 넣는다. 견본은 `docs/profile.example.yaml` |
+| 4단계 이후 | **GitHub URL**이나 이력서 PDF를 주면 LLM이 증거 초안(`DRAFT`)을 만들고 사용자가 확인한다 |
+| 5단계 이후 | 대시보드 My Evidence 화면에서 직접 등록·수정 |
+
+**GitHub 기반 증거**: 프로젝트는 URL과 **내 역할·기여 한두 줄**만 적어도 된다. 시스템이 README·기술 스택·문서를 읽어 증거 초안을 만들고 **커밋 SHA**를 기록한다. 확인된 증거만 평가에 쓰고, 평가 때마다 저장소를 다시 읽지 않는다. 저장소만으로는 팀 프로젝트의 내 기여를 알 수 없고, 의존성 목록 같은 간접 신호로 역량이 부풀려질 수 있기 때문이다.
 
 ## F02. 채용공고 자동 수집
 
@@ -183,11 +195,11 @@ AI Agent가 공고의 요구사항을 추출하고 지원자의 이력, 연구, 
 |---|---|---|---|
 | Eligibility | 3단계 | 규칙 + AI 추출 | 지원할 수 있는가? |
 | Evidence-based Fit Score | 0~100 | 결정론적 Python 계산 | 요구사항을 증거가 얼마나 충족하는가? |
-| Global Opportunity Score | 1~5 | LLM 종합 판단 | 지원할 가치가 있는가? |
+| Global Opportunity Score | 1~5 | LLM 항목별 판정 + 결정론적 가중 합산 | 이 자리가 나에게 좋은 자리인가? |
 
 세 결과는 **서로 덮어쓰거나 조정하지 않는다.** 상세 설계는 4장 참고.
 
-**Global Opportunity Score**는 진로 연관성, 보상 수준, 근무지역·근무조건, 성장 기회, 위험 요소를 항목별로 설명한다. 공고에 없는 정보는 **'미확인'**으로 표시하고 지어내지 않는다. 어떤 점수도 **합격 확률이 아니다.**
+**Global Opportunity Score**는 사용자의 **진로 선호**와 공고의 사실을 비교해 진로 연관성, 보상, 근무조건, 성장, 위험을 항목별로 판정하고 가중 합산한다. 역량 증거는 다시 평가하지 않는다 (Fit Score와 이중 계산 방지). 공고에 없는 정보는 **'미확인'**으로 표시하고 지어내지 않는다. 어떤 점수도 **합격 확률이 아니다.** 상세는 4.7 참고.
 
 **추천 표시**: 대시보드에는 세 결과를 규칙으로 묶은 **추천 / 검토 필요 / 비추천** 표시와 그 사유를 보여 준다. 추천 표시는 LLM이 정하지 않으며, **지원 여부의 최종 결정은 사용자**가 한다. 규칙은 4.6 참고.
 
@@ -241,10 +253,11 @@ AI는 검증 가능한 사실을 재구성할 수 있지만, **새로운 경력�
 - **보고된(reported)** 모델 식별 정보 — Agent가 스스로 보고한 값이므로 검증된 값이 아님
 - 세 가지 평가 결과
 - 요구사항별 증거 연결 (증거 **버전** 참조)
+- Global 평가에 쓴 **진로 선호 버전**
 - LLM 원본 판정과 사용자 확정 판정
 - 재평가 전후 결과, 지원 상태 변경 이력
 
-같은 공고의 점수가 바뀌었을 때 **공고가 바뀐 것인지, 증거가 수정된 것인지, 정책·모델이 바뀐 것인지** 구분할 수 있어야 한다.
+같은 공고의 점수가 바뀌었을 때 **공고가 바뀐 것인지, 증거나 진로 선호가 수정된 것인지, 정책·모델이 바뀐 것인지** 구분할 수 있어야 한다.
 
 ## F08. AI Agent 및 MCP 연동
 
@@ -316,7 +329,7 @@ Fit Score = 100 × Σ(가중치 × 강도) / Σ(가중치)
 
 | 순서 | 조건 | 표시 |
 |---|---|---|
-| ① | Eligibility가 `INELIGIBLE` | ⚪ 비추천 (`NOT_RECOMMENDED`) |
+| ① | Eligibility가 `INELIGIBLE`, 또는 진로 선호의 절대 안 되는 조건(deal-breaker) 위반이 **확인됨** | ⚪ 비추천 (`NOT_RECOMMENDED`) |
 | ② | `ELIGIBLE` + Coverage ≥ 기준 + Fit Score **하한** ≥ F + Global ≥ G | 🟢 추천 (`RECOMMENDED`) |
 | ③ | Fit Score **상한** < F_low **그리고** Global ≤ G_low | ⚪ 비추천 (`NOT_RECOMMENDED`) |
 | ④ | 그 밖의 모든 경우 (`UNCERTAIN`, Coverage 부족, 경계선 점수, Global 미평가 등) | 🟡 검토 필요 (`REVIEW`) |
@@ -326,6 +339,25 @@ Fit Score = 100 × Σ(가중치 × 강도) / Σ(가중치)
 - 표시와 함께 사유를 보여 준다. 예: "필수 요건 충족, 핵심 요구사항 5개 중 4개 증거 확인, 근무지 미확인"
 - 기준값은 `scoring_policies`에 버전·해시로 저장하고, 평가 기록에 추천 표시·사유·정책 버전을 남긴다.
 - 추천 표시와 사용자의 실제 결정(지원 예정 / 건너뜀)의 일치도를 벤치마크 지표로 쓴다 (11.3).
+- deal-breaker 위반 여부가 미확인이면 ④ 검토 필요로 간다.
+
+## 4.7 Global Opportunity Score 설계
+
+Fit Score가 "내가 이 일을 할 수 있나"라면, Global은 **"이 자리가 나에게 좋은 자리인가"**를 본다.
+
+| 항목 | 사용자 쪽 근거 (진로 선호) | 공고 쪽 근거 |
+|---|---|---|
+| 진로 연관성 | 목표 직무와 우선순위, 장기 목표 | 직무 내용, 기술 스택 |
+| 보상 | 희망 연봉 하한 | 공고에 적힌 연봉 (대부분 미확인) |
+| 근무조건 | 희망 지역·출퇴근 한계, 원격 선호, 허용 고용형태 | 근무지, 원격 여부, 고용형태 |
+| 성장 | 성장에서 중요하게 보는 것 | 팀·업무 설명, 교육 지원 |
+| 위험 | 절대 안 되는 조건 | 수습 감액, 포괄임금, 계약 기간 등 공고 문구 |
+
+- LLM이 항목마다 **1~5 또는 미확인**으로 판정하고 근거(공고 문구 또는 선호 항목)를 붙인다.
+- 종합 점수 = **미확인을 제외한 항목 점수의 가중 평균**. Python에서 `Decimal`로 계산하고 소수 첫째 자리에서 ROUND_HALF_UP. 미확인 항목 수를 함께 보고한다.
+- 가중치는 진로 선호에 저장하고, 정하지 않았으면 균등 가중치를 쓴다.
+- 학력·프로젝트 같은 역량 증거는 보지 않는다.
+- MVP에서 회사 정보는 공고 본문만 쓴다. 회사 규모·재무가 필요해지면 OpenDART 등 공식 공시 API를 검토한다.
 
 ---
 
@@ -387,10 +419,12 @@ Provider (API / ATS / RSS / 알림 메일 / 수동) → 정규화 → 중복 제
 
 | 테이블 | 주요 데이터 |
 |---|---|
-| `candidate_profiles` | 기본 정보, 관심 직무, 근무 조건 |
+| `candidate_profiles` | 기본 정보 (평가에 불필요한 연락처 등은 분리) |
+| `career_preferences` | 진로 선호의 정체성 (현재 버전 포인터) |
+| `career_preference_versions` | 목표 직무, 희망 조건, deal-breaker, Global 가중치의 버전별 기록 |
 | `projects` | 프로젝트·논문·연구 경험 |
 | `evidence_items` | 증거의 정체성 (현재 버전 포인터) |
-| `evidence_item_versions` | 증거 내용·기술·성과 수치·출처의 버전별 기록 |
+| `evidence_item_versions` | 증거 내용·기술·성과 수치·출처(GitHub URL·커밋 SHA 포함)의 버전별 기록, `DRAFT/CONFIRMED` |
 | `jobs` | 정규화된 공고, `status`, `detail_status`, `deadline_type` |
 | `job_sources` | 출처 플랫폼, URL, 외부 공고 ID |
 | `job_snapshots` | 수집 시점별 JD 원문과 해시 (불변) |
@@ -398,7 +432,7 @@ Provider (API / ATS / RSS / 알림 메일 / 수동) → 정규화 → 중복 제
 | `job_requirements` | 요구사항 (필수/우대, 중요도), 세트에 소속 |
 | `duplicate_candidates` | 자동 병합하지 않은 중복 의심 공고 쌍 |
 | `scoring_policies` | 가중치, 계수, Coverage 기준, 반올림 규칙, 추천 기준값 (버전·해시) |
-| `evaluations` | 평가 실행 단위, Eligibility, 점수, 추천 표시·사유, 정책·프롬프트 해시, 보고된 모델, `DRAFT/CONFIRMED` |
+| `evaluations` | 평가 실행 단위, Eligibility, Fit Score, Global 항목별 점수·근거·종합 점수, 추천 표시·사유, 진로 선호 버전, 정책·프롬프트 해시, 보고된 모델, `DRAFT/CONFIRMED` |
 | `evidence_matches` | 요구사항 ↔ 증거 버전 연결과 판정 |
 | `applications` | 공고별 현재 지원 상태·지원일 |
 | `application_events` | 지원 상태 변경 이력 |
@@ -410,7 +444,8 @@ Provider (API / ATS / RSS / 알림 메일 / 수동) → 정규화 → 중복 제
 
 ## 6.2 핵심 관계
 
-- Candidate Profile 1 : N Projects
+- Candidate Profile 1 : N Projects, Candidate Profile 1 : 1 Career Preferences, Career Preferences 1 : N Versions
+- Evaluation N : 1 Career Preference Version
 - Project 1 : N Evidence Items, Evidence Item 1 : N Evidence Item Versions
 - Job 1 : N Job Sources, Job 1 : N Job Snapshots
 - Job Snapshot 1 : N Requirement Sets, Requirement Set 1 : N Job Requirements
@@ -479,11 +514,13 @@ Agent는 텍스트 생성기가 아니라 **평가에 필요한 정보를 골라
 | `search_jobs` | Read | 조건에 맞는 공고 검색 |
 | `get_job_details` | Read | 공고 원문·정규화 데이터·요구사항 세트 |
 | `get_candidate_profile` | Read | 후보자 프로필 (평가에 불필요한 개인정보 제외) |
-| `search_candidate_evidence` | Read | 기술·프로젝트·성과 증거 검색 |
+| `search_candidate_evidence` | Read | 기술·프로젝트·성과 증거 검색 (확정된 증거만) |
+| `get_career_preferences` | Read | 현재 진로 선호 버전 (Global 평가용) |
 | `get_evaluation_history` | Read | 과거 평가 결과 |
 | `calculate_fit_score` | Compute | 고정 정책 기반 점수 계산 |
 | `save_evaluation` | Write | 평가 결과를 `DRAFT`로 저장 |
 | `create_document_draft` | Write | 문서 초안을 `DRAFT`로 저장 |
+| `create_evidence_draft` | Write | GitHub·이력서에서 뽑은 증거 초안을 `DRAFT`로 저장 (출처·커밋 SHA 포함) |
 
 **Resources**: 후보자 프로필 요약, 현재 Scoring 정책 등 읽기 전용 문맥
 **Prompts**: 공고 평가 워크플로 템플릿
@@ -542,7 +579,8 @@ UI 문구, 평가 설명, 오류 메시지는 **자연스러운 한국어**로 �
 
 - 이력서, 프로젝트 자료, 지원 기록은 로컬에 저장한다.
 - API 키와 인증정보는 환경변수 또는 별도 Secret 저장소로 관리하고 Git에 커밋하지 않는다. (레포의 hook이 `.env`, DB 파일, `data/` 커밋을 차단한다.)
-- Claude Code로 평가하면 관련 데이터가 모델 제공자에게 전송될 수 있다. 평가에 필요 없는 개인정보는 MCP·LLM 전송 대상에서 제외한다.
+- Claude Code로 평가하면 관련 데이터가 모델 제공자에게 전송될 수 있다. 평가에 필요 없는 개인정보는 MCP·LLM 전송 대상에서 제외한다. 희망 연봉 같은 진로 선호는 Global 평가에 필요하므로 전송 대상이다.
+- 프로필 파일(`data/profile/`)은 커밋되지 않는다. 레포에는 빈 견본만 둔다.
 - 사용자 데이터 백업과 삭제 기능을 둔다.
 - 공개 레포에는 실제 개인 데이터나 수집한 공고 원문을 넣지 않는다. 데모에는 합성 데이터를 쓴다.
 

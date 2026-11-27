@@ -1,0 +1,92 @@
+# Proofit 프로필 견본 (provisional format)
+#
+# 사용법
+#   1. 이 파일을 data/profile/profile.yaml 로 복사한다. (data/ 는 커밋되지 않음)
+#   2. 아래 항목을 실제 내용으로 채운다. 모르는 칸은 비워 두거나 지운다.
+#   3. 가져오기 스크립트로 DB에 넣는다. (증거 모델 설계 시 구현 예정, D-035)
+#
+# 원칙
+#   - 성과 수치는 실제로 확인 가능한 것만 적는다. 자기소개서 AI는 여기 있는 수치만 쓸 수 있다.
+#   - 주민번호, 상세 주소처럼 평가에 필요 없는 정보는 적지 않는다.
+#   - 형식은 임시다. 정식 형식은 증거 모델 설계 때 확정한다.
+
+profile:
+  name: ""                  # 선택. 문서 초안에만 쓰이고 평가(LLM)에는 보내지 않음
+  education:
+    - school: ""
+      major: ""
+      degree: ""            # 학사 / 석사 / 박사
+      status: ""            # 졸업 / 졸업예정 / 재학
+      graduation: ""        # YYYY-MM
+      gpa: ""               # 선택
+      relevant_courses: []  # 예: [머신러닝, 자연어처리]
+
+  experiences:              # 인턴, 연구실, 아르바이트 등
+    - organization: ""
+      role: ""
+      start: ""             # YYYY-MM
+      end: ""               # YYYY-MM, 진행 중이면 비움
+      summary: ""
+      evidence:             # 성과 하나 = 증거 하나
+        - claim: ""         # 예: "고객 문의 분류 모델을 만들어 처리 시간을 30% 단축"
+          skills: []
+          metric: ""        # 확인 가능한 수치만
+          source: ""        # 증빙 링크나 자료 위치
+
+  projects:
+    - name: ""
+      github_url: ""        # 있으면 나중에 증거 초안을 자동으로 뽑을 수 있음 (D-036)
+      period: ""            # 예: 2025-03 ~ 2025-08
+      team_size: 1
+      my_role: ""           # 필수. 팀 프로젝트라면 내가 맡은 부분을 구체적으로
+      evidence:             # 아는 핵심 성과 1~3개. 비워 두면 GitHub 초안에서 보완
+        - claim: ""         # 예: "BM25 + Dense 하이브리드 검색 파이프라인 설계·구현"
+          skills: []        # 예: [Python, LangGraph]
+          metric: ""        # 예: "Hybrid Recall@10 0.62 → 0.81"
+          source: ""        # 예: README, 실험 노트북 경로
+
+  papers:
+    - title: ""
+      venue: ""             # 학회·저널
+      year: ""
+      authors: ""           # 저자 순서 포함
+      my_contribution: ""
+      url: ""
+
+  global_experience:        # 해외 경험
+    - type: ""              # 교환학생 / 어학연수 / 해외 인턴 / 해외 근무 등
+      organization: ""
+      country: ""
+      period: ""
+      what_i_did: ""
+      languages_used: []
+
+  certifications:           # 자격증·어학 점수
+    - name: ""              # 예: TOEIC, OPIc, 정보처리기사
+      score_or_grade: ""
+      acquired: ""          # YYYY-MM
+      expires: ""           # YYYY-MM, 해당 없으면 비움
+
+  skills:
+    - name: ""
+      level: ""             # 선택. 판정은 증거로 하므로 참고용
+
+career_preferences:          # Global Opportunity Score의 근거 (D-028)
+  target_roles:             # 우선순위 순서
+    - ""                    # 예: AI Agent Engineer
+  industries: []
+  salary_min_krw: null      # 희망 연봉 하한 (만원 단위가 아니라 원 단위)
+  locations: []             # 예: [서울, 판교]
+  max_commute_minutes: null
+  remote_preference: ""     # 상관없음 / 하이브리드 선호 / 원격 필수 등
+  employment_types: []      # 허용: [정규직, 인턴, 채용연계형, 계약직]
+  company_size: []          # 예: [대기업, 중견, 스타트업, 외국계]
+  growth_priorities: []     # 예: [멘토링, 기술 깊이, 해외 기회]
+  deal_breakers: []         # 절대 안 되는 조건. 예: [지방 근무, 교대근무]
+  long_term_goal: ""        # 한두 문장
+  global_weights:           # 선택. 비우면 균등 가중치
+    career_alignment: null
+    compensation: null
+    work_conditions: null
+    growth: null
+    risk: null

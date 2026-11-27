@@ -28,9 +28,13 @@ Details: `docs/proposal.md` (spec) and `docs/decisions.md` (decision log + sourc
 ## Evaluation: three independent results
 1. **Eligibility** — `ELIGIBLE | INELIGIBLE | UNCERTAIN`. Extract **필수 vs 우대** separately from importance (`High/Medium/Low`). Apply knockout only when a **mandatory requirement is confirmed unmet**; missing evidence alone means 확인 필요, not automatic rejection. Eligibility gates recommendations, **never changes Fit Score**.
 2. **Evidence-based Fit Score (0–100)** — Importance `High/Medium/Low = 5/3/1`; strength `Strong/Partial/None = 1/0.5/0`. Pure Python: `100 * sum(weight * strength) / sum(weight)`. `Unknown` is separate: report **lower bound (Unknown = 0)**, **upper bound (Unknown = 1)**, and **evidence coverage**. Compute with `Decimal`, round half-up to 1 decimal place. Rubric: Strong = 직접 수행이 확인됨; Partial = 관련 경험은 있지만 요구 범위·깊이 부족; None = 검토한 자료에 근거 없음; Unknown = 판단 자료 부족. Link every match to evidence IDs. Same approved inputs + policy version => same score.
-3. **Global Opportunity Score (1–5)** — Explain career alignment, compensation, location/work conditions, growth, and risks; missing facts are **미확인**, never invented. Scores are **not 합격 확률**.
+3. **Global Opportunity Score (1–5)** — "Is this a good position for me?" Compare the user's versioned **career preferences** with job facts; do **not** re-score skills/evidence (no double counting with Fit). LLM rates career alignment, compensation, location/work conditions, growth, and risks as 1–5 or **미확인**, each with a cited source (JD text or preference field); Python combines known items by the user's weights (default equal), `Decimal`, half-up to 1 decimal, and reports the 미확인 count. Missing facts are never invented. Scores are **not 합격 확률**.
 
-**Recommendation** (`RECOMMENDED | REVIEW | NOT_RECOMMENDED` = 추천/검토 필요/비추천) is a deterministic, policy-versioned rule over the three results, shown with reasons (`docs/decisions.md` D-027). The LLM never sets it; the user makes the final apply/skip decision.
+**Recommendation** (`RECOMMENDED | REVIEW | NOT_RECOMMENDED` = 추천/검토 필요/비추천) is a deterministic, policy-versioned rule over the three results plus confirmed deal-breaker violations, shown with reasons (`docs/decisions.md` D-027, D-028). The LLM never sets it; the user makes the final apply/skip decision.
+
+## Candidate data input
+- The DB is the single source of truth for candidate evidence and career preferences. Before the UI exists, import from `data/profile/profile.yaml` (git-ignored; template `docs/profile.example.yaml`); no two-way file sync.
+- Evidence extracted from GitHub repos or résumés is saved as `DRAFT` with source URL and **commit SHA**; only user-confirmed evidence is used in evaluation, and repos are not re-read per evaluation. Do not infer skills from indirect signals such as dependency lists.
 
 ## Reproducibility & data integrity
 - Keep immutable **job snapshots**, with versioned requirement sets. Reuse approved requirements on re-evaluation; create a new version on JD change or explicit extraction correction.
@@ -49,7 +53,7 @@ Details: `docs/proposal.md` (spec) and `docs/decisions.md` (decision log + sourc
 ## Delivery order
 1. DB models, shared services, Alembic migrations, CRUD, tests.
 2. **One genuinely automatic, authorized collection source**; scheduling, dedup, logs, basic listings.
-3. Snapshot/evidence versions, eligibility rules, deterministic scoring, rubric tests.
+3. Snapshot/evidence/preference versions, profile-file import, eligibility rules, deterministic scoring, rubric tests.
 4. MCP + single-agent evidence mapping, structured outputs, draft review/history.
 5. Korean dashboard/tracker and evidence-grounded 이력서·자기소개서 drafts.
 6. Benchmark extraction stability, evidence precision, unsupported claims, eligibility errors, replay consistency, latency/tokens; compare LLM-only vs evidence-based assessment before multi-agent.
