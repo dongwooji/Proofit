@@ -23,7 +23,11 @@ Details: `docs/proposal.md` (spec) and `docs/decisions.md` (decision log + sourc
 
 ## Git
 - **Do not add `Co-Authored-By: Claude` (or any Claude attribution) trailers to commit messages or PR descriptions.**
-- Write commit messages in English: a short imperative subject line, then a bullet summary of what changed and why.
+- Write commit messages and PR titles/descriptions in **Korean**, keeping the conventions:
+  - Commit: short subject line (≤50자, 마침표 없음, "~ 추가/수정/제거"처럼 명사형으로 끝냄), blank line, then bullets on what changed and why.
+  - PR: title in the same style as a commit subject; body sections `## 요약`, `## 변경 사항`, `## 리뷰 참고`, `## 테스트`.
+  - Keep code identifiers, file paths, commands, and established technical terms in English (e.g. `job_snapshots`, Alembic, CI).
+  - Commits made before 2026-11-28 are in English; do not rewrite history to translate them.
 
 ## Automated job discovery (P0)
 - Prefer authorized APIs, public company ATS job-board APIs, opt-in 채용 알림 이메일 (read-only mailbox access), and official RSS feeds. Manual URL/paste import is a **fallback, not the main workflow**. Google Alerts is **not used**.
