@@ -13,11 +13,24 @@ Details: `docs/proposal.md` (spec) and `docs/decisions.md` (decision log + sourc
 ## Environment
 - Windows 11, Python 3.13, **uv** for Python env/dependencies (`python -m uv` if `uv` is not on PATH), Node 22.
 - Project hooks (`.claude/hooks/`): `guard_secrets.py` blocks committing `.env`, DB files, `data/`, keys; `ruff_on_edit.py` runs ruff fix + format on edited `.py` files.
-- Commands (test, lint, run): add here as they are created.
+- Commands (run from repo root; use `python -m uv` if `uv` is not on PATH):
+  - Install: `uv sync`
+  - Test: `uv run pytest` (tests build the schema by running real Alembic migrations)
+  - Lint/format: `uv run ruff check .` / `uv run ruff format .`
+  - Migrate local DB (`data/proofit.db`): `uv run alembic upgrade head`; new migration: `uv run alembic revision --autogenerate -m "..."`
+  - Run API: `uv run uvicorn proofit.api.main:app --reload` (docs at `/docs`)
+- Layout: `src/proofit/{models,schemas,services,api}`; services `flush()`, callers commit (D-037).
 
 ## Git
 - **Do not add `Co-Authored-By: Claude` (or any Claude attribution) trailers to commit messages or PR descriptions.**
-- Write commit messages in English: a short imperative subject line, then a bullet summary of what changed and why.
+- Write commit messages and PR titles/descriptions in **Korean**, keeping the conventions:
+  - Commit subject uses **Conventional Commits**: `<type>(<scope>): <한국어 제목>` — scope optional (e.g. `jobs`, `evidence`, `api`, `db`).
+    Types: `feat` 기능, `fix` 버그 수정, `docs` 문서, `refactor` 동작 변화 없는 구조 개선, `test` 테스트, `ci` CI, `build` 빌드·의존성, `chore` 기타 잡무, `perf` 성능.
+    Example: `feat(jobs): 공고 스냅샷 해시 중복 방지 추가`
+  - Subject ≤50자, 마침표 없음, "~ 추가/수정/제거"처럼 명사형으로 끝냄; blank line; then bullets on what changed and why. Breaking changes: `!` after type plus a `BREAKING CHANGE:` line.
+  - PR: title in the same format as a commit subject; body sections `## 요약`, `## 변경 사항`, `## 리뷰 참고`, `## 테스트`.
+  - Keep code identifiers, file paths, commands, and established technical terms in English (e.g. `job_snapshots`, Alembic, CI).
+  - Commits made before 2026-11-28 are in English; do not rewrite history to translate them.
 
 ## Automated job discovery (P0)
 - Prefer authorized APIs, public company ATS job-board APIs, opt-in 채용 알림 이메일 (read-only mailbox access), and official RSS feeds. Manual URL/paste import is a **fallback, not the main workflow**. Google Alerts is **not used**.
