@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest
 from alembic import command
 from alembic.config import Config
+from fastapi.testclient import TestClient
 from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
@@ -61,3 +62,20 @@ def engine(db_url: str) -> Iterator[Engine]:
 def session(engine: Engine) -> Iterator[Session]:
     with make_session_factory(engine)() as s:
         yield s
+
+
+@pytest.fixture
+def client(engine: Engine) -> Iterator[TestClient]:
+    from proofit.api.main import create_app
+    from proofit.db.session import get_session
+
+    factory = make_session_factory(engine)
+
+    def override() -> Iterator[Session]:
+        with factory() as s:
+            yield s
+
+    app = create_app()
+    app.dependency_overrides[get_session] = override
+    with TestClient(app) as c:
+        yield c
