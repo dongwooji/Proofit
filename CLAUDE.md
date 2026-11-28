@@ -13,7 +13,13 @@ Details: `docs/proposal.md` (spec) and `docs/decisions.md` (decision log + sourc
 ## Environment
 - Windows 11, Python 3.13, **uv** for Python env/dependencies (`python -m uv` if `uv` is not on PATH), Node 22.
 - Project hooks (`.claude/hooks/`): `guard_secrets.py` blocks committing `.env`, DB files, `data/`, keys; `ruff_on_edit.py` runs ruff fix + format on edited `.py` files.
-- Commands (test, lint, run): add here as they are created.
+- Commands (run from repo root; use `python -m uv` if `uv` is not on PATH):
+  - Install: `uv sync`
+  - Test: `uv run pytest` (tests build the schema by running real Alembic migrations)
+  - Lint/format: `uv run ruff check .` / `uv run ruff format .`
+  - Migrate local DB (`data/proofit.db`): `uv run alembic upgrade head`; new migration: `uv run alembic revision --autogenerate -m "..."`
+  - Run API: `uv run uvicorn proofit.api.main:app --reload` (docs at `/docs`)
+- Layout: `src/proofit/{models,schemas,services,api}`; services `flush()`, callers commit (D-037).
 
 ## Git
 - **Do not add `Co-Authored-By: Claude` (or any Claude attribution) trailers to commit messages or PR descriptions.**
