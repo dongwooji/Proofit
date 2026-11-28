@@ -5,9 +5,9 @@ import pytest
 from alembic import command
 from alembic.util.exc import CommandError
 from sqlalchemy import Engine, text
-from tests.conftest import alembic_config, sqlite_url
 
 from proofit.db.base import UTCDateTime
+from tests.conftest import alembic_config, sqlite_url
 
 
 def test_sqlite_pragmas_are_applied(engine: Engine) -> None:
