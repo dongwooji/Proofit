@@ -24,8 +24,11 @@ Details: `docs/proposal.md` (spec) and `docs/decisions.md` (decision log + sourc
 ## Git
 - **Do not add `Co-Authored-By: Claude` (or any Claude attribution) trailers to commit messages or PR descriptions.**
 - Write commit messages and PR titles/descriptions in **Korean**, keeping the conventions:
-  - Commit: short subject line (≤50자, 마침표 없음, "~ 추가/수정/제거"처럼 명사형으로 끝냄), blank line, then bullets on what changed and why.
-  - PR: title in the same style as a commit subject; body sections `## 요약`, `## 변경 사항`, `## 리뷰 참고`, `## 테스트`.
+  - Commit subject uses **Conventional Commits**: `<type>(<scope>): <한국어 제목>` — scope optional (e.g. `jobs`, `evidence`, `api`, `db`).
+    Types: `feat` 기능, `fix` 버그 수정, `docs` 문서, `refactor` 동작 변화 없는 구조 개선, `test` 테스트, `ci` CI, `build` 빌드·의존성, `chore` 기타 잡무, `perf` 성능.
+    Example: `feat(jobs): 공고 스냅샷 해시 중복 방지 추가`
+  - Subject ≤50자, 마침표 없음, "~ 추가/수정/제거"처럼 명사형으로 끝냄; blank line; then bullets on what changed and why. Breaking changes: `!` after type plus a `BREAKING CHANGE:` line.
+  - PR: title in the same format as a commit subject; body sections `## 요약`, `## 변경 사항`, `## 리뷰 참고`, `## 테스트`.
   - Keep code identifiers, file paths, commands, and established technical terms in English (e.g. `job_snapshots`, Alembic, CI).
   - Commits made before 2026-11-28 are in English; do not rewrite history to translate them.
 
