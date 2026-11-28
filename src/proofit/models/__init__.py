@@ -2,6 +2,18 @@
 
 from proofit.db.base import Base
 from proofit.models.application import Application, ApplicationEvent
+from proofit.models.candidate import CandidateProfile, EvidenceItem, EvidenceItemVersion, Project
 from proofit.models.job import Job, JobSnapshot, JobSource
 
-__all__ = ["Application", "ApplicationEvent", "Base", "Job", "JobSnapshot", "JobSource"]
+__all__ = [
+    "Application",
+    "ApplicationEvent",
+    "Base",
+    "CandidateProfile",
+    "EvidenceItem",
+    "EvidenceItemVersion",
+    "Job",
+    "JobSnapshot",
+    "JobSource",
+    "Project",
+]

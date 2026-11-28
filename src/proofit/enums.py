@@ -70,6 +70,16 @@ class EvidenceKind(StrEnum):
     OTHER = "OTHER"
 
 
+class EvidenceOrigin(StrEnum):
+    MANUAL = "MANUAL"  # 사용자가 직접 작성
+    PROFILE_IMPORT = "PROFILE_IMPORT"  # data/profile/profile.yaml 가져오기
+    GITHUB = "GITHUB"  # GitHub 저장소에서 AI가 뽑은 초안
+    RESUME = "RESUME"  # 이력서에서 AI가 뽑은 초안
+
+
+AI_EXTRACTED_ORIGINS = frozenset({EvidenceOrigin.GITHUB, EvidenceOrigin.RESUME})
+
+
 class ReviewStatus(StrEnum):
     DRAFT = "DRAFT"
     CONFIRMED = "CONFIRMED"
